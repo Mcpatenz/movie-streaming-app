@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const categories = [
   "Trending",
@@ -176,11 +176,25 @@ const movies = [
   },
 ];
 
+const initialProfile = {
+  name: "Ariana Stone",
+  email: "ariana@example.com",
+  plan: "Premium",
+};
+
 export default function Home() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Trending");
   const [selectedMovie, setSelectedMovie] = useState(movies[0]);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [mode, setMode] = useState("login");
+  const [profile, setProfile] = useState(initialProfile);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredMovies = useMemo(() => {
     const term = search.toLowerCase();
@@ -228,7 +242,13 @@ export default function Home() {
               placeholder="Search movies"
             />
           </div>
-          <button className="ghost-button">Login</button>
+
+          <button className="profile-pill" onClick={() => setAuthOpen(true)}>
+            {mounted ? `${profile.name.split(" ")[0]}` : "User"}
+          </button>
+          <button className="ghost-button" onClick={() => setAuthOpen(true)}>
+            {mounted ? profile.plan : "Login"}
+          </button>
         </div>
       </header>
 
@@ -410,7 +430,79 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {authOpen && (
+        <div className="modal-backdrop" onClick={() => setAuthOpen(false)}>
+          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal" onClick={() => setAuthOpen(false)}>
+              ✕
+            </button>
+
+            <div className="auth-panel auth-visual">
+              <div className="auth-badge">MovieVerse</div>
+              <h3>Stream smarter.</h3>
+              <p>
+                Watch the latest blockbuster titles, organize your favorites, and keep your watchlist ready.
+              </p>
+            </div>
+
+            <div className="auth-panel auth-form-panel">
+              <div className="auth-toggle">
+                <button
+                  className={mode === "login" ? "active" : ""}
+                  onClick={() => setMode("login")}
+                >
+                  Login
+                </button>
+                <button
+                  className={mode === "signup" ? "active" : ""}
+                  onClick={() => setMode("signup")}
+                >
+                  Sign Up
+                </button>
+              </div>
+
+              <form
+                className="auth-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget;
+                  const formData = new FormData(form);
+                  const name = formData.get("name")?.toString() || "Ariana Stone";
+                  const email = formData.get("email")?.toString() || "ariana@example.com";
+                  setProfile({
+                    name,
+                    email,
+                    plan: "Premium",
+                  });
+                  setAuthOpen(false);
+                }}
+              >
+                {mode === "signup" && (
+                  <div className="field-group">
+                    <label htmlFor="name">Full name</label>
+                    <input id="name" name="name" type="text" placeholder="Your name" defaultValue={profile.name} />
+                  </div>
+                )}
+
+                <div className="field-group">
+                  <label htmlFor="email">Email</label>
+                  <input id="email" name="email" type="email" defaultValue={profile.email} placeholder="you@example.com" />
+                </div>
+
+                <div className="field-group">
+                  <label htmlFor="password">Password</label>
+                  <input id="password" name="password" type="password" placeholder="••••••••" />
+                </div>
+
+                <button type="submit" className="auth-submit">
+                  {mode === "login" ? "Login to My Account" : "Create My Account"}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
-
