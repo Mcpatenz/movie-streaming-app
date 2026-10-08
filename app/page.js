@@ -7,7 +7,6 @@ import useDebounce from "@/hooks/useDebounce";
 const MovieCard = memo(function MovieCard({ movie, isSelected, onSelect }) {
   return (
     <article
-      key={movie.id}
       className={`movie-card ${isSelected ? "selected" : ""}`}
       onClick={() => onSelect(movie)}
     >
@@ -42,8 +41,7 @@ export default function Home() {
     const term = debouncedSearch.toLowerCase();
     return movies.filter((movie) => {
       const matchesText =
-        movie.title.toLowerCase().includes(term) ||
-        movie.genre.toLowerCase().includes(term);
+        movie.title.toLowerCase().includes(term) || movie.genre.toLowerCase().includes(term);
       const matchesCategory =
         selectedCategory === "Trending" ||
         movie.genre.toLowerCase().includes(selectedCategory.toLowerCase());
@@ -100,7 +98,7 @@ export default function Home() {
         <div
           className="hero-background"
           style={{ backgroundImage: `url(${selectedMovie.background})` }}
-        ></div>
+        />
         <div className="hero-overlay" />
 
         <div className="hero-content">
