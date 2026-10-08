@@ -1,599 +1,508 @@
-:root {
-  --bg: #070b14;
-  --bg-alt: #0f172a;
-  --panel: rgba(15, 23, 42, 0.9);
-  --panel-soft: rgba(17, 24, 39, 0.72);
-  --card: rgba(255, 255, 255, 0.04);
-  --line: rgba(255, 255, 255, 0.1);
-  --text: #edf2ff;
-  --muted: #a4b0c3;
-  --primary: #ff2f6e;
-  --primary-2: #ff7a59;
-  --accent: #f9c74f;
-  --success: #53d769;
-  --shadow: 0 28px 60px rgba(2, 6, 15, 0.6);
-}
+"use client";
 
-* {
-  box-sizing: border-box;
-}
+import { useEffect, useMemo, useState } from "react";
 
-html {
-  scroll-behavior: smooth;
-}
+const categories = [
+  "Trending",
+  "Action",
+  "Drama",
+  "Sci-Fi",
+  "Comedy",
+  "Crime",
+  "Animation",
+  "Adventure",
+];
 
-body {
-  margin: 0;
-  background:
-    radial-gradient(circle at top left, rgba(255, 47, 110, 0.18), transparent 22%),
-    linear-gradient(180deg, #050a13 0%, #0b1220 100%);
-  color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
-}
+const movies = [
+  {
+    id: 1,
+    title: "Midnight Echo",
+    year: 2024,
+    genre: "Sci‑Fi / Thriller",
+    rating: "PG-13",
+    duration: "2h 11m",
+    description:
+      "A reclusive sound engineer discovers a hidden transmission that predicts the next global catastrophe.",
+    poster:
+      "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=900&q=80",
+    background:
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1600&q=80",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+    progress: 52,
+    tag: "Top Pick",
+    director: "Alicia Moren",
+    cast: ["Liam Hart", "Nia Foster", "Theo Shaw"],
+    badge: "New release",
+  },
+  {
+    id: 2,
+    title: "Neon Horizon",
+    year: 2023,
+    genre: "Action / Cyberpunk",
+    rating: "R",
+    duration: "1h 56m",
+    description:
+      "A rogue driver races across a fractured megacity to stop a weaponized AI from taking control of the grid.",
+    poster:
+      "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80",
+    background:
+      "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1600&q=80",
+    video: "https://www.w3schools.com/html/movie.mp4",
+    progress: 64,
+    tag: "New",
+    director: "Rafael Stone",
+    cast: ["Jaden Cole", "Mila Quinn", "Kurt Dale"],
+    badge: "Featured",
+  },
+  {
+    id: 3,
+    title: "Silver Harbor",
+    year: 2022,
+    genre: "Drama / Mystery",
+    rating: "PG",
+    duration: "2h 04m",
+    description:
+      "After a storm washes away her childhood memories, a woman investigates the disappearance of her father.",
+    poster:
+      "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=900&q=80",
+    background:
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+    progress: 38,
+    tag: "Awarded",
+    director: "Ella March",
+    cast: ["Sofia Wren", "Daniel Moss", "Ava Blake"],
+    badge: "Critics' choice",
+  },
+  {
+    id: 4,
+    title: "Crimson Road",
+    year: 2021,
+    genre: "Adventure / Crime",
+    rating: "PG-13",
+    duration: "1h 49m",
+    description:
+      "Two former thieves are forced to uncover a hidden vault beneath a collapsed desert highway.",
+    poster:
+      "https://images.unsplash.com/photo-1513106580091-1d82408b8cd6?auto=format&fit=crop&w=900&q=80",
+    background:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
+    video: "https://www.w3schools.com/html/movie.mp4",
+    progress: 18,
+    tag: "Popular",
+    director: "Jonas Pike",
+    cast: ["Riley Ford", "Harper Stone", "Milo West"],
+    badge: "Adventure",
+  },
+  {
+    id: 5,
+    title: "Moonlit Run",
+    year: 2024,
+    genre: "Action / Thriller",
+    rating: "TV-MA",
+    duration: "1h 41m",
+    description:
+      "An ex-detective crosses a citywide blackout to stop a ruthless syndicate before sunrise.",
+    poster:
+      "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=900&q=80",
+    background:
+      "https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?auto=format&fit=crop&w=1600&q=80",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+    progress: 41,
+    tag: "Trending",
+    director: "Nolan Chase",
+    cast: ["Ezra Thorn", "Jade Rook", "Tess Vale"],
+    badge: "Weekend hit",
+  },
+  {
+    id: 6,
+    title: "Velvet Signal",
+    year: 2020,
+    genre: "Drama / Mystery",
+    rating: "PG-13",
+    duration: "2h 09m",
+    description:
+      "A journalist receives a coded message from the night shift of a dead radio station and follows it underground.",
+    poster:
+      "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=900&q=80",
+    background:
+      "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1600&q=80",
+    video: "https://www.w3schools.com/html/movie.mp4",
+    progress: 70,
+    tag: "Featured",
+    director: "Amara West",
+    cast: ["Lena Cross", "Mason Grey", "Iris Hale"],
+    badge: "Suspense",
+  },
+  {
+    id: 7,
+    title: "Aurora Drift",
+    year: 2025,
+    genre: "Animation / Adventure",
+    rating: "G",
+    duration: "1h 33m",
+    description:
+      "A young pilot and her robot companion cross the frozen sky roads to restore the last lights of the city.",
+    poster:
+      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=900&q=80",
+    background:
+      "https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&w=1600&q=80",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+    progress: 25,
+    tag: "Family",
+    director: "Noah Baird",
+    cast: ["Emma Sol", "Finn Reed", "Luca Bloom"],
+    badge: "Family watch",
+  },
+  {
+    id: 8,
+    title: "Glass Harbor",
+    year: 2021,
+    genre: "Crime / Drama",
+    rating: "R",
+    duration: "2h 17m",
+    description:
+      "A coastal prosecutor uncovers a hidden trafficking operation tied to the city's most powerful families.",
+    poster:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+    background:
+      "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1600&q=80",
+    video: "https://www.w3schools.com/html/movie.mp4",
+    progress: 79,
+    tag: "Binge",
+    director: "Samuel Dune",
+    cast: ["Holly Kane", "Jasper Quinn", "Nina Frost"],
+    badge: "Must watch",
+  },
+];
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+const initialProfile = {
+  name: "Ariana Stone",
+  email: "ariana@example.com",
+  plan: "Premium",
+};
 
-button,
-input {
-  font: inherit;
-}
+export default function Home() {
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Trending");
+  const [selectedMovie, setSelectedMovie] = useState(movies[0]);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [mode, setMode] = useState("login");
+  const [profile, setProfile] = useState(initialProfile);
+  const [mounted, setMounted] = useState(false);
 
-img {
-  width: 100%;
-  display: block;
-}
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-.streaming-app {
-  max-width: 1500px;
-  margin: 0 auto;
-  padding: 18px 24px 60px;
-}
+  const filteredMovies = useMemo(() => {
+    const term = search.toLowerCase();
+    return movies.filter((movie) => {
+      const matchesText =
+        movie.title.toLowerCase().includes(term) ||
+        movie.genre.toLowerCase().includes(term);
+      const matchesCategory =
+        selectedCategory === "Trending" ||
+        movie.genre.toLowerCase().includes(selectedCategory.toLowerCase());
+      return matchesText && matchesCategory;
+    });
+  }, [search, selectedCategory]);
 
-.topbar {
-  max-width: 1500px;
-  margin: 0 auto 22px;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  background: rgba(7, 11, 20, 0.72);
-  backdrop-filter: blur(18px);
-  position: sticky;
-  top: 12px;
-  z-index: 20;
-}
+  const openDetails = (movie) => {
+    setSelectedMovie(movie);
+    setDetailOpen(true);
+  };
 
-.brand-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+  return (
+    <main className="streaming-app">
+      <header className="topbar">
+        <div className="brand-wrap">
+          <div className="brand-mark">M</div>
+          <div className="brand-text">
+            <span className="brand-main">MovieVerse</span>
+            <span className="brand-sub">Premium</span>
+          </div>
+        </div>
 
-.brand-mark {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  font-size: 1.2rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  box-shadow: 0 12px 30px rgba(255, 47, 110, 0.4);
-}
+        <nav className="main-nav" aria-label="Main navigation">
+          <a href="#home">Home</a>
+          <a href="#movies">Movies</a>
+          <a href="#series">Series</a>
+          <a href="#mylist">My List</a>
+        </nav>
 
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
+        <div className="topbar-actions">
+          <div className="search-box">
+            <span className="search-icon">⌕</span>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search movies"
+            />
+          </div>
 
-.brand-main {
-  font-size: 1.2rem;
-  font-weight: 700;
-}
+          <button className="profile-pill" onClick={() => setAuthOpen(true)}>
+            {mounted ? `${profile.name.split(" ")[0]}` : "User"}
+          </button>
+          <button className="ghost-button" onClick={() => setAuthOpen(true)}>
+            {mounted ? profile.plan : "Login"}
+          </button>
+        </div>
+      </header>
 
-.brand-sub {
-  color: var(--muted);
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
+      <section className="hero-section" id="home">
+        <div
+          className="hero-background"
+          style={{ backgroundImage: `url(${selectedMovie.background})` }}
+        ></div>
+        <div className="hero-overlay" />
 
-.main-nav {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  color: var(--muted);
-  font-size: 0.96rem;
-}
+        <div className="hero-content">
+          <div className="hero-badge">Now streaming</div>
+          <h1>{selectedMovie.title}</h1>
 
-.main-nav a {
-  transition: color 0.2s ease;
-}
+          <div className="hero-meta">
+            <span>{selectedMovie.year}</span>
+            <span>{selectedMovie.genre}</span>
+            <span>{selectedMovie.duration}</span>
+            <span>{selectedMovie.rating}</span>
+          </div>
 
-.main-nav a:hover {
-  color: var(--text);
-}
+          <p className="hero-description">{selectedMovie.description}</p>
 
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
+          <div className="hero-actions">
+            <button className="play-button" onClick={() => setDetailOpen(true)}>
+              ▶ Play
+            </button>
+            <button className="secondary-button" onClick={() => openDetails(selectedMovie)}>
+              ＋ More Info
+            </button>
+          </div>
+        </div>
+      </section>
 
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: min(340px, 30vw);
-  height: 46px;
-  padding: 0 14px;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
-}
+      <section className="filter-bar">
+        {categories.map((category) => (
+          <button
+            key={category}
+            className={`filter-chip ${
+              selectedCategory === category ? "active" : ""
+            }`}
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category}
+          </button>
+        ))}
+      </section>
 
-.search-icon {
-  color: var(--muted);
-  font-size: 1.25rem;
-}
+      <section className="section-block" id="movies">
+        <div className="section-head">
+          <h2>Featured Movies</h2>
+          <a href="#more">View all</a>
+        </div>
 
-.search-box input {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--text);
-  font-size: 0.95rem;
-}
+        <div className="movie-grid">
+          {filteredMovies.length > 0 ? (
+            filteredMovies.map((movie) => (
+              <article
+                key={movie.id}
+                className={`movie-card ${
+                  selectedMovie.id === movie.id ? "selected" : ""
+                }`}
+                onClick={() => openDetails(movie)}
+              >
+                <div className="movie-thumb-wrap">
+                  <img src={movie.poster} alt={movie.title} />
+                  <span className="movie-tag">{movie.tag}</span>
+                </div>
+                <div className="movie-card-body">
+                  <div className="movie-card-row">
+                    <span>{movie.year}</span>
+                    <span>{movie.rating}</span>
+                  </div>
+                  <h3>{movie.title}</h3>
+                  <p>{movie.genre}</p>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="empty-state">No movies match your search.</div>
+          )}
+        </div>
+      </section>
 
-.search-box input::placeholder {
-  color: var(--muted);
-}
+      <section className="continue-section">
+        <div className="section-head small">
+          <h2>Continue Watching</h2>
+          <a href="#resume">Resume</a>
+        </div>
 
-.ghost-button,
-.play-button,
-.secondary-button,
-.filter-chip {
-  cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
+        <div className="continue-list">
+          {movies.slice(0, 4).map((movie) => (
+            <div key={movie.id} className="resume-card">
+              <div className="resume-image">
+                <img src={movie.poster} alt={movie.title} />
+              </div>
+              <div className="resume-body">
+                <div className="resume-header">
+                  <h3>{movie.title}</h3>
+                  <span>{movie.duration}</span>
+                </div>
+                <div className="progress-bar">
+                  <span style={{ width: `${movie.progress}%` }} />
+                </div>
+                <p>{movie.progress}% watched</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-.ghost-button:hover,
-.play-button:hover,
-.secondary-button:hover,
-.filter-chip:hover {
-  transform: translateY(-1px);
-}
+      <section className="player-panel">
+        <div className="player-header">
+          <div>
+            <p className="player-label">Now watching</p>
+            <h3>{selectedMovie.title}</h3>
+          </div>
+          <div className="player-tags">
+            <span>{selectedMovie.genre}</span>
+            <span>{selectedMovie.duration}</span>
+          </div>
+        </div>
 
-.ghost-button {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
-  padding: 11px 16px;
-}
+        <video
+          key={selectedMovie.video}
+          controls
+          autoPlay
+          className="movie-player"
+          poster={selectedMovie.poster}
+        >
+          <source src={selectedMovie.video} type="video/mp4" />
+          Your browser does not support HTML5 video.
+        </video>
+      </section>
 
-.hero-section {
-  position: relative;
-  min-height: 620px;
-  overflow: hidden;
-  border-radius: 30px;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-}
+      {detailOpen && (
+        <div className="modal-backdrop" onClick={() => setDetailOpen(false)}>
+          <div className="movie-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal" onClick={() => setDetailOpen(false)}>
+              ✕
+            </button>
 
-.hero-background,
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-}
+            <div className="modal-visual">
+              <img src={selectedMovie.poster} alt={selectedMovie.title} />
+            </div>
 
-.hero-background {
-  background-position: center;
-  background-size: cover;
-  transform: scale(1.08);
-  filter: brightness(0.58);
-}
+            <div className="modal-content">
+              <div className="modal-badge">{selectedMovie.badge}</div>
+              <h2>{selectedMovie.title}</h2>
+              <div className="modal-meta">
+                <span>{selectedMovie.year}</span>
+                <span>{selectedMovie.genre}</span>
+                <span>{selectedMovie.duration}</span>
+                <span>{selectedMovie.rating}</span>
+              </div>
 
-.hero-overlay {
-  background: linear-gradient(
-    90deg,
-    rgba(6, 9, 17, 0.96) 0%,
-    rgba(6, 9, 17, 0.72) 36%,
-    rgba(6, 9, 17, 0.18) 100%
+              <p className="modal-description">{selectedMovie.description}</p>
+
+              <div className="modal-grid">
+                <div>
+                  <label>Director</label>
+                  <p>{selectedMovie.director}</p>
+                </div>
+                <div>
+                  <label>Cast</label>
+                  <p>{selectedMovie.cast.join(", ")}</p>
+                </div>
+              </div>
+
+              <div className="modal-actions">
+                <button className="play-button" onClick={() => setDetailOpen(false)}>
+                  ▶ Watch Now
+                </button>
+                <button className="secondary-button" onClick={() => setDetailOpen(false)}>
+                  + My List
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {authOpen && (
+        <div className="modal-backdrop" onClick={() => setAuthOpen(false)}>
+          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal" onClick={() => setAuthOpen(false)}>
+              ✕
+            </button>
+
+            <div className="auth-panel auth-visual">
+              <div className="auth-badge">MovieVerse</div>
+              <h3>Stream smarter.</h3>
+              <p>
+                Watch the latest blockbuster titles, organize your favorites, and keep your watchlist ready.
+              </p>
+            </div>
+
+            <div className="auth-panel auth-form-panel">
+              <div className="auth-toggle">
+                <button
+                  className={mode === "login" ? "active" : ""}
+                  onClick={() => setMode("login")}
+                >
+                  Login
+                </button>
+                <button
+                  className={mode === "signup" ? "active" : ""}
+                  onClick={() => setMode("signup")}
+                >
+                  Sign Up
+                </button>
+              </div>
+
+              <form
+                className="auth-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget;
+                  const formData = new FormData(form);
+                  const name = formData.get("name")?.toString() || "Ariana Stone";
+                  const email = formData.get("email")?.toString() || "ariana@example.com";
+                  setProfile({
+                    name,
+                    email,
+                    plan: "Premium",
+                  });
+                  setAuthOpen(false);
+                }}
+              >
+                {mode === "signup" && (
+                  <div className="field-group">
+                    <label htmlFor="name">Full name</label>
+                    <input id="name" name="name" type="text" placeholder="Your name" defaultValue={profile.name} />
+                  </div>
+                )}
+
+                <div className="field-group">
+                  <label htmlFor="email">Email</label>
+                  <input id="email" name="email" type="email" defaultValue={profile.email} placeholder="you@example.com" />
+                </div>
+
+                <div className="field-group">
+                  <label htmlFor="password">Password</label>
+                  <input id="password" name="password" type="password" placeholder="••••••••" />
+                </div>
+
+                <button type="submit" className="auth-submit">
+                  {mode === "login" ? "Login to My Account" : "Create My Account"}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 700px;
-  min-height: 620px;
-  padding: 96px 56px 54px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.hero-badge {
-  width: fit-content;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.hero-content h1 {
-  margin: 18px 0 18px;
-  font-size: clamp(2.8rem, 5vw, 5.2rem);
-  line-height: 0.94;
-  letter-spacing: -0.05em;
-}
-
-.hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.hero-meta span {
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 0.83rem;
-}
-
-.hero-description {
-  max-width: 560px;
-  margin: 22px 0 30px;
-  font-size: 1.06rem;
-  line-height: 1.8;
-  color: var(--muted);
-}
-
-.hero-actions {
-  display: flex;
-  gap: 14px;
-}
-
-.play-button {
-  padding: 16px 26px;
-  border: none;
-  border-radius: 14px;
-  color: white;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.secondary-button {
-  padding: 16px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
-  font-weight: 700;
-}
-
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 30px 0 0;
-}
-
-.filter-chip {
-  padding: 11px 16px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--muted);
-}
-
-.filter-chip.active {
-  background: linear-gradient(135deg, rgba(255, 47, 110, 0.18), rgba(255, 122, 89, 0.12));
-  color: var(--text);
-  border-color: rgba(255, 47, 110, 0.35);
-}
-
-.section-block,
-.continue-section,
-.player-panel {
-  margin-top: 42px;
-}
-
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
-
-.section-head h2 {
-  margin: 0;
-  font-size: 2rem;
-  letter-spacing: -0.04em;
-}
-
-.section-head a {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.movie-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(220px, 1fr));
-  gap: 22px;
-}
-
-.movie-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.25s ease, border-color 0.25s ease;
-}
-
-.movie-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(255, 255, 255, 0.22);
-}
-
-.movie-card.selected {
-  border-color: rgba(255, 47, 110, 0.8);
-  box-shadow: 0 0 0 1px rgba(255, 47, 110, 0.35);
-}
-
-.movie-thumb-wrap {
-  position: relative;
-  height: 360px;
-}
-
-.movie-thumb-wrap img {
-  height: 100%;
-  object-fit: cover;
-}
-
-.movie-tag {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  padding: 7px 10px;
-  border-radius: 999px;
-  background: rgba(7, 11, 20, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--accent);
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.movie-card-body {
-  padding: 16px 16px 18px;
-}
-
-.movie-card-row {
-  display: flex;
-  justify-content: space-between;
-  color: var(--muted);
-  font-size: 0.76rem;
-}
-
-.movie-card-body h3 {
-  margin: 12px 0 6px;
-  font-size: 1.26rem;
-}
-
-.movie-card-body p {
-  margin: 0;
-  color: var(--muted);
-}
-
-.empty-state {
-  grid-column: 1 / -1;
-  padding: 48px 24px;
-  border: 1px dashed var(--line);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  text-align: center;
-  color: var(--muted);
-}
-
-.continue-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(260px, 1fr));
-  gap: 18px;
-}
-
-.resume-card {
-  display: flex;
-  gap: 16px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-}
-
-.resume-image {
-  width: 150px;
-  min-width: 150px;
-  height: 118px;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.resume-image img {
-  height: 100%;
-  object-fit: cover;
-}
-
-.resume-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.resume-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.resume-header h3 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.resume-header span,
-.resume-body p {
-  color: var(--muted);
-}
-
-.progress-bar {
-  width: 100%;
-  height: 9px;
-  margin: 16px 0 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.progress-bar span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-}
-
-.player-panel {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  padding: 22px 22px 18px;
-}
-
-.player-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.player-label {
-  margin: 0 0 10px;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.player-header h3 {
-  margin: 0;
-  font-size: 2rem;
-}
-
-.player-tags {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.player-tags span {
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--line);
-  color: var(--muted);
-}
-
-.movie-player {
-  width: 100%;
-  max-height: 700px;
-  border-radius: 18px;
-  background: #000;
-}
-
-@media (max-width: 1100px) {
-  .movie-grid {
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
-  }
-
-  .main-nav {
-    display: none;
-  }
-
-  .search-box {
-    width: min(260px, 40vw);
-  }
-}
-
-@media (max-width: 720px) {
-  .streaming-app {
-    padding: 12px 12px 50px;
-  }
-
-  .topbar {
-    flex-wrap: wrap;
-    padding: 14px 16px;
-  }
-
-  .topbar-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .search-box {
-    width: 100%;
-  }
-
-  .hero-content {
-    padding: 70px 24px 32px;
-    min-height: 520px;
-  }
-
-  .hero-actions {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .play-button,
-  .secondary-button {
-    width: 100%;
-  }
-
-  .movie-grid,
-  .continue-list {
-    grid-template-columns: 1fr;
-  }
-
-  .resume-card {
-    flex-direction: column;
-  }
-
-  .resume-image {
-    width: 100%;
-    height: 180px;
-  }
-
-  .player-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
