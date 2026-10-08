@@ -30,6 +30,9 @@ const movies = [
     video: "https://www.w3schools.com/html/mov_bbb.mp4",
     progress: 52,
     tag: "Top Pick",
+    director: "Alicia Moren",
+    cast: ["Liam Hart", "Nia Foster", "Theo Shaw"],
+    badge: "New release",
   },
   {
     id: 2,
@@ -47,6 +50,9 @@ const movies = [
     video: "https://www.w3schools.com/html/movie.mp4",
     progress: 64,
     tag: "New",
+    director: "Rafael Stone",
+    cast: ["Jaden Cole", "Mila Quinn", "Kurt Dale"],
+    badge: "Featured",
   },
   {
     id: 3,
@@ -64,6 +70,9 @@ const movies = [
     video: "https://www.w3schools.com/html/mov_bbb.mp4",
     progress: 38,
     tag: "Awarded",
+    director: "Ella March",
+    cast: ["Sofia Wren", "Daniel Moss", "Ava Blake"],
+    badge: "Critics' choice",
   },
   {
     id: 4,
@@ -81,6 +90,9 @@ const movies = [
     video: "https://www.w3schools.com/html/movie.mp4",
     progress: 18,
     tag: "Popular",
+    director: "Jonas Pike",
+    cast: ["Riley Ford", "Harper Stone", "Milo West"],
+    badge: "Adventure",
   },
   {
     id: 5,
@@ -98,6 +110,9 @@ const movies = [
     video: "https://www.w3schools.com/html/mov_bbb.mp4",
     progress: 41,
     tag: "Trending",
+    director: "Nolan Chase",
+    cast: ["Ezra Thorn", "Jade Rook", "Tess Vale"],
+    badge: "Weekend hit",
   },
   {
     id: 6,
@@ -115,6 +130,9 @@ const movies = [
     video: "https://www.w3schools.com/html/movie.mp4",
     progress: 70,
     tag: "Featured",
+    director: "Amara West",
+    cast: ["Lena Cross", "Mason Grey", "Iris Hale"],
+    badge: "Suspense",
   },
   {
     id: 7,
@@ -132,6 +150,9 @@ const movies = [
     video: "https://www.w3schools.com/html/mov_bbb.mp4",
     progress: 25,
     tag: "Family",
+    director: "Noah Baird",
+    cast: ["Emma Sol", "Finn Reed", "Luca Bloom"],
+    badge: "Family watch",
   },
   {
     id: 8,
@@ -149,6 +170,9 @@ const movies = [
     video: "https://www.w3schools.com/html/movie.mp4",
     progress: 79,
     tag: "Binge",
+    director: "Samuel Dune",
+    cast: ["Holly Kane", "Jasper Quinn", "Nina Frost"],
+    badge: "Must watch",
   },
 ];
 
@@ -156,6 +180,7 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Trending");
   const [selectedMovie, setSelectedMovie] = useState(movies[0]);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const filteredMovies = useMemo(() => {
     const term = search.toLowerCase();
@@ -169,6 +194,11 @@ export default function Home() {
       return matchesText && matchesCategory;
     });
   }, [search, selectedCategory]);
+
+  const openDetails = (movie) => {
+    setSelectedMovie(movie);
+    setDetailOpen(true);
+  };
 
   return (
     <main className="streaming-app">
@@ -223,8 +253,12 @@ export default function Home() {
           <p className="hero-description">{selectedMovie.description}</p>
 
           <div className="hero-actions">
-            <button className="play-button">▶ Play</button>
-            <button className="secondary-button">＋ My List</button>
+            <button className="play-button" onClick={() => setDetailOpen(true)}>
+              ▶ Play
+            </button>
+            <button className="secondary-button" onClick={() => openDetails(selectedMovie)}>
+              ＋ More Info
+            </button>
           </div>
         </div>
       </section>
@@ -257,7 +291,7 @@ export default function Home() {
                 className={`movie-card ${
                   selectedMovie.id === movie.id ? "selected" : ""
                 }`}
-                onClick={() => setSelectedMovie(movie)}
+                onClick={() => openDetails(movie)}
               >
                 <div className="movie-thumb-wrap">
                   <img src={movie.poster} alt={movie.title} />
@@ -329,6 +363,53 @@ export default function Home() {
           Your browser does not support HTML5 video.
         </video>
       </section>
+
+      {detailOpen && (
+        <div className="modal-backdrop" onClick={() => setDetailOpen(false)}>
+          <div className="movie-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal" onClick={() => setDetailOpen(false)}>
+              ✕
+            </button>
+
+            <div className="modal-visual">
+              <img src={selectedMovie.poster} alt={selectedMovie.title} />
+            </div>
+
+            <div className="modal-content">
+              <div className="modal-badge">{selectedMovie.badge}</div>
+              <h2>{selectedMovie.title}</h2>
+              <div className="modal-meta">
+                <span>{selectedMovie.year}</span>
+                <span>{selectedMovie.genre}</span>
+                <span>{selectedMovie.duration}</span>
+                <span>{selectedMovie.rating}</span>
+              </div>
+
+              <p className="modal-description">{selectedMovie.description}</p>
+
+              <div className="modal-grid">
+                <div>
+                  <label>Director</label>
+                  <p>{selectedMovie.director}</p>
+                </div>
+                <div>
+                  <label>Cast</label>
+                  <p>{selectedMovie.cast.join(", ")}</p>
+                </div>
+              </div>
+
+              <div className="modal-actions">
+                <button className="play-button" onClick={() => setDetailOpen(false)}>
+                  ▶ Watch Now
+                </button>
+                <button className="secondary-button" onClick={() => setDetailOpen(false)}>
+                  + My List
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
